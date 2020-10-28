@@ -1,4 +1,4 @@
-# Cockroachdb Bring Your Own Certs
+# Cockroachdb Bring-Your-Own-Certs
 
 This guide supplements [crdb-single-region-k8s-with-non-default-namespace](https://github.com/jhatcher9999/crdb-single-region-k8s-with-non-default-namespace/) to demonstrate using non-Kubernetes CA with a 3-node Tanzu Kubernetest cluster.
 
@@ -16,7 +16,7 @@ tkgi get-kubeconfig [your-tkgi-cluster-name] -a [your-tanzu-k8s-dns-or-ip] -k -u
 ```
 If you're using multiple clustesr, set default context for kubectl command
 ```cmd
-kubectl config use-context tkgi-cluster-1
+kubectl config use-context [your-tkgi-cluster-name]
 ```
 Create directory to store certs and keys
 ```cmd
@@ -49,13 +49,26 @@ kubectl create secret generic cockroachdb.client.root --from-file=certs -n your-
 kubectl create secret generic cockroachdb.node --from-file=certs -n your-cockroachdb-ns
 ```
 ## Deploy statefulset cockroachdb nodes
-Apply manifest to deploy statefulset
+Refer remaining steps to [crdb-single-region-k8s-with-non-default-namespace](https://github.com/jhatcher9999/crdb-single-region-k8s-with-non-default-namespace/) ...
+Follow step #4 by creating individual manifest files or use this manifest to deploy statefulset. Be sure to change namespace in metadata.
 ```cmd
 kubectl  create -f cockroachdb-statefulset-secure-non-default-ns.yaml
 ```
-Check pods for running status
+Skip step# 5, 6 & 7. Instead join cockroachdb nodes into cluster
+```cmd
+kubectl exec -it cockroachdb-0 -n cockroachdb -- /cockroach/cockroach init --certs-dir=/cockroach/cockroach-certs
+```
+Check all pods for running status
 ```cmd
 kubectl get pods -n non-default-namespac
+```
+Observe for the following, otherwise use kubectl logs command to see where the error is
+```output
+NAME                        READY   STATUS    RESTARTS   AGE
+cockroachdb-0               1/1     Running   0          18h
+cockroachdb-1               1/1     Running   0          41h
+cockroachdb-2               1/1     Running   0          41h
+cockroachdb-client-secure   1/1     Running   0          40h
 ```
 To run SQL client first launch a pod that runs indefinitely with the cockroach binary inside it
 ```cmd
