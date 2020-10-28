@@ -10,11 +10,11 @@ To create custom certs, one can use cockroach cli or openssl. The following inst
 Also download tkgi and kubectl required versions for your Tanzu Kubernetes environment.
 
 ## Your Own Cert Creation
-After deploying Tanzu Kubernetes cluster, retrieve config data. When prompting, provide password
+After deploying Tanzu Kubernetes cluster, retrieve config data (when prompted, provide password to complete this step)
 ```cmd
 tkgi get-kubeconfig [your-tkgi-cluster-name] -a [your-tanzu-k8s-dns-or-ip] -k -u [user-id]
 ```
-If you're using multiple clustesr, set default context for kubectl command
+If using multiple clusters, set default context for kubectl command
 ```cmd
 kubectl config use-context [your-tkgi-cluster-name]
 ```
@@ -32,21 +32,21 @@ cockroach cert create-client root --certs-dir=certs --ca-key=my-safe-directory/c
 ```
 Create cert for nodes. Note the wildcard *.your-cockroachdb-ns.default.svc.cluster.local which corresponds to a namespace created by kubectl cmd (see below)
 ```cmd
-cockroach cert create-node --certs-dir=certs --ca-key=my-safe-directory/ca.key localhost 127.0.0.1 cockroachdb-public cockroachdb-public.default cockroachdb-public.default.svc.cluster.local .cockroachdb *.cockroachdb.default *.your-cockroachdb-ns.default.svc.cluster.local
+cockroach cert create-node --certs-dir=certs --ca-key=my-safe-directory/ca.key localhost 127.0.0.1 cockroachdb-public cockroachdb-public.default cockroachdb-public.default.svc.cluster.local .cockroachdb *.cockroachdb.default *.non-default-namespace.default.svc.cluster.local
 ```
 
 ## Cert Uploading
-Substitute your own namespace as required.
+Substitute [your-namespace] with your own namepsace
 ```cmd
-kubectl  create namespace your-cockroachdb-ns
+kubectl  create namespace [your-namespace]
 kubectl  get ns
 ```
-Uploading your certs for joininig nodes
+Uploading your certs for joining nodes
 ```cmd
-kubectl create secret generic cockroachdb.client.root --from-file=certs -n your-cockroachdb-ns
+kubectl create secret generic cockroachdb.client.root --from-file=certs -n your-namespace
 ```
 ```cmd
-kubectl create secret generic cockroachdb.node --from-file=certs -n your-cockroachdb-ns
+kubectl create secret generic cockroachdb.node --from-file=certs -n your-namespace
 ```
 ## Deploy statefulset cockroachdb nodes
 Refer remaining steps to [crdb-single-region-k8s-with-non-default-namespace](https://github.com/jhatcher9999/crdb-single-region-k8s-with-non-default-namespace/) ...
