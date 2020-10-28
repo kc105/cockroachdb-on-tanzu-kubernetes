@@ -54,7 +54,7 @@ Follow step #4 by creating individual manifest files or use this manifest to dep
 ```cmd
 kubectl  create -f cockroachdb-statefulset-secure-non-default-ns.yaml
 ```
-Skip step# 5, 6 & 7. Instead join cockroachdb nodes into cluster
+Skip steps #5, #6 & #7. Instead run following command to join cockroachdb nodes into cluster.
 ```cmd
 kubectl exec -it cockroachdb-0 -n cockroachdb -- /cockroach/cockroach init --certs-dir=/cockroach/cockroach-certs
 ```
@@ -78,4 +78,4 @@ Use built-in SQL client
 ```cmd
 kubectl exec -it cockroachdb-client-secure -n cockroachdb -- ./cockroach sql --url="postgres://root@cockroachdb-public:26257/?sslmode=verify-full&sslcert=/cockroach-certs/client.root.crt&sslkey=/cockroach-certs/client.root.key&sslrootcert=/cockroach-certs/ca.crt"
 ```
-Create, add data or launch Admin UI using [crdb-single-region-k8s-with-non-default-namespace](https://github.com/jhatcher9999/crdb-single-region-k8s-with-non-default-namespace/) instructions.
+Follow [crdb-single-region-k8s-with-non-default-namespace](https://github.com/jhatcher9999/crdb-single-region-k8s-with-non-default-namespace/) to create, add data or launch Admin UI.
